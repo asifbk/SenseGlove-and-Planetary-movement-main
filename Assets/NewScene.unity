@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -199,8 +199,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationGesture: {fileID: 1577298077}
+  trackedHand: {fileID: 1321213357}
   rotationAxis: {x: 0, y: 1, z: 0}
-  rotationSpeed: 100
+  baseSpeed: 20
+  pinchGesture: {fileID: 1612835917}
+  scaleSpeed: 0.5
+  minScale: 0.2
+  maxScale: 3
 --- !u!1 &139655395
 GameObject:
   m_ObjectHideFlags: 0
@@ -429,6 +434,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 157733528}
   m_CullTransparentMesh: 1
+--- !u!4 &166500243 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4544715872229154, guid: ae1b59de5c41973448707b3b84a94488, type: 3}
+  m_PrefabInstance: {fileID: 1906678703}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &208985960
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -632,8 +642,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationGesture: {fileID: 0}
+  trackedHand: {fileID: 0}
   rotationAxis: {x: 0, y: 1, z: 0}
-  rotationSpeed: 20
+  baseSpeed: 20
+  pinchGesture: {fileID: 0}
+  scaleSpeed: 0.5
+  minScale: 0.2
+  maxScale: 3
 --- !u!135 &237282482
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1008,8 +1023,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationGesture: {fileID: 0}
+  trackedHand: {fileID: 0}
   rotationAxis: {x: 0, y: 1, z: 0}
-  rotationSpeed: 20
+  baseSpeed: 20
+  pinchGesture: {fileID: 0}
+  scaleSpeed: 0.5
+  minScale: 0.2
+  maxScale: 3
 --- !u!135 &505628596
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1182,7 +1202,7 @@ Transform:
   m_GameObject: {fileID: 520302192}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.4254161, y: 6.31, z: -17.75}
+  m_LocalPosition: {x: -1.4254161, y: 2.46, z: -14.84}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1758,8 +1778,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationGesture: {fileID: 0}
+  trackedHand: {fileID: 0}
   rotationAxis: {x: 0, y: 1, z: 0}
-  rotationSpeed: 20
+  baseSpeed: 20
+  pinchGesture: {fileID: 0}
+  scaleSpeed: 0.5
+  minScale: 0.2
+  maxScale: 3
 --- !u!1 &874919884
 GameObject:
   m_ObjectHideFlags: 0
@@ -2949,8 +2974,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationGesture: {fileID: 0}
+  trackedHand: {fileID: 0}
   rotationAxis: {x: 0, y: 1, z: 0}
-  rotationSpeed: 20
+  baseSpeed: 20
+  pinchGesture: {fileID: 0}
+  scaleSpeed: 0.5
+  minScale: 0.2
+  maxScale: 3
 --- !u!1 &1202312658
 GameObject:
   m_ObjectHideFlags: 0
@@ -3269,8 +3299,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationGesture: {fileID: 0}
+  trackedHand: {fileID: 0}
   rotationAxis: {x: 0, y: 1, z: 0}
-  rotationSpeed: 20
+  baseSpeed: 20
+  pinchGesture: {fileID: 0}
+  scaleSpeed: 0.5
+  minScale: 0.2
+  maxScale: 3
 --- !u!114 &1241764466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3664,6 +3699,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4616165200164398447, guid: 76f3439a0ae796e4b81bee3f91f888ee, type: 3}
   m_PrefabInstance: {fileID: 1289056246}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1321213357 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114969439650229696, guid: ae1b59de5c41973448707b3b84a94488, type: 3}
+  m_PrefabInstance: {fileID: 1906678703}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a5cf26d5c03c21448e3bbf835836feb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1486677401
 GameObject:
   m_ObjectHideFlags: 0
@@ -4046,6 +4092,60 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1589715509}
   m_CullTransparentMesh: 1
+--- !u!1 &1612835915
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1612835916}
+  - component: {fileID: 1612835917}
+  m_Layer: 0
+  m_Name: PinchGesture
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1612835916
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1612835915}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 166500243}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1612835917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1612835915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8119800a2e57544880be4b5919feca8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  thumbFlexMin: 0
+  thumbFlexMax: 0.35
+  indexFlexMin: 0
+  indexFlexMax: 0.35
+  middleFlexMin: 0.4
+  middleFlexMax: 1
+  ringFlexMin: 0.4
+  ringFlexMax: 1
+  pinkyFlexMin: 0.4
+  pinkyFlexMax: 1
 --- !u!1 &1638525899
 GameObject:
   m_ObjectHideFlags: 0
@@ -4079,8 +4179,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationGesture: {fileID: 0}
+  trackedHand: {fileID: 0}
   rotationAxis: {x: 0, y: 1, z: 0}
-  rotationSpeed: 20
+  baseSpeed: 20
+  pinchGesture: {fileID: 0}
+  scaleSpeed: 0.5
+  minScale: 0.2
+  maxScale: 3
 --- !u!135 &1638525901
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -9448,8 +9553,8 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 1
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 2
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -9488,10 +9593,10 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 4
+  m_Lightmapping: 2
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
-  m_BounceIntensity: 1
+  m_BounceIntensity: 0
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
@@ -9508,7 +9613,7 @@ Transform:
   m_GameObject: {fileID: 1815318735}
   serializedVersion: 2
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: 0.02, y: 1.1, z: -0.04}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9611,15 +9716,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4994553139033272, guid: ae1b59de5c41973448707b3b84a94488, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.006624654
+      value: -0.33
       objectReference: {fileID: 0}
     - target: {fileID: 4994553139033272, guid: ae1b59de5c41973448707b3b84a94488, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.006868912
+      value: 0.57
       objectReference: {fileID: 0}
     - target: {fileID: 4994553139033272, guid: ae1b59de5c41973448707b3b84a94488, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.028336734
+      value: 1.49
       objectReference: {fileID: 0}
     - target: {fileID: 4994553139033272, guid: ae1b59de5c41973448707b3b84a94488, type: 3}
       propertyPath: m_LocalRotation.w
@@ -9671,7 +9776,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4544715872229154, guid: ae1b59de5c41973448707b3b84a94488, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1612835916}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae1b59de5c41973448707b3b84a94488, type: 3}
 --- !u!1 &1917198433
@@ -9904,8 +10012,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationGesture: {fileID: 0}
+  trackedHand: {fileID: 0}
   rotationAxis: {x: 0, y: 1, z: 0}
-  rotationSpeed: 20
+  baseSpeed: 20
+  pinchGesture: {fileID: 0}
+  scaleSpeed: 0.5
+  minScale: 0.2
+  maxScale: 3
 --- !u!135 &1941586612
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -10025,8 +10138,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationGesture: {fileID: 0}
+  trackedHand: {fileID: 0}
   rotationAxis: {x: 0, y: 1, z: 0}
-  rotationSpeed: 20
+  baseSpeed: 20
+  pinchGesture: {fileID: 0}
+  scaleSpeed: 0.5
+  minScale: 0.2
+  maxScale: 3
 --- !u!135 &2007012645
 SphereCollider:
   m_ObjectHideFlags: 0
