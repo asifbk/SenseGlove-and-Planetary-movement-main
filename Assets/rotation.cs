@@ -4,15 +4,18 @@ using SG;
 public class PlanetGestureRotationAndScale : MonoBehaviour
 {
     [Header("Rotation Settings")]
-    public SG_BasicGesture rotationGesture;    // Gesture for Y-axis rotation
-    public SG_TrackedHand trackedHand;         // Hand reference
-    public float gestureYSpeed = 50f;          // Y-axis rotation speed via gesture
+    public SG_BasicGesture rotationGesture;    
+    public SG_TrackedHand trackedHand;         
+    public float gestureYSpeed = 50f;          
 
     [Header("Scaling Settings")]
-    public SG_BasicGesture pinchGesture;       // Pinch gesture
+    public SG_BasicGesture pinchGesture;       
     public float scaleSpeed = 0.5f;
     public float minScale = 0.2f;
     public float maxScale = 3f;
+
+    [Header("Grab Reference")]
+    public MyPhysicsGrab grabWrapper;   // ✅ reference to our wrapper
 
     void Update()
     {
@@ -27,12 +30,11 @@ public class PlanetGestureRotationAndScale : MonoBehaviour
         }
     }
 
-    // Y-axis rotation via gesture
     void HandleGestureYRotation(SG_HandPose pose)
     {
         if (rotationGesture != null && rotationGesture.IsGesturing)
         {
-            float thumbFlex = pose.normalizedFlexion[0]; // Thumb flexion
+            float thumbFlex = pose.normalizedFlexion[0];
             float speed = gestureYSpeed;
 
             if (thumbFlex < 0.25f) speed *= 1f;
@@ -43,10 +45,11 @@ public class PlanetGestureRotationAndScale : MonoBehaviour
         }
     }
 
-    // Pinch scaling with smooth shrink back
     void HandlePinchScaling(SG_HandPose pose)
     {
-        if (pinchGesture != null && pinchGesture.IsGesturing)
+        bool isHolding = grabWrapper != null && grabWrapper.IsGrabbing;
+
+        if (pinchGesture != null && pinchGesture.IsGesturing && !isHolding)
         {
             float thumbFlex = pose.normalizedFlexion[0];
             float scaleChange = 0f;
@@ -62,11 +65,10 @@ public class PlanetGestureRotationAndScale : MonoBehaviour
                 transform.localScale = newScale;
             }
         }
-        else
+        else if (!isHolding) // ✅ only auto-shrink when not grabbing
         {
             Vector3 targetScale = Vector3.one * minScale;
             transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * scaleSpeed);
         }
     }
-
 }
