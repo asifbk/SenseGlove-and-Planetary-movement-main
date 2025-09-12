@@ -94,6 +94,7 @@ InitTestScene*.unity*
 /[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Flow/UnitOptions.db.meta
 /[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Core/Property Providers
 /[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Core/Property Providers.meta
-
+/Assets/Samples/VIVE OpenXR Plugin/2.5.1/VIVE OpenXR Samples/Samples/Commons/Fonts/*
+Assets/Samples/VIVE OpenXR Plugin/2.5.1/VIVE OpenXR Samples/Samples/*
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*

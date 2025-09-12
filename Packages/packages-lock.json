@@ -1,5 +1,16 @@
 {
   "dependencies": {
+    "com.htc.upm.vive.openxr": {
+      "version": "file:C:/Users/mkarim1/Downloads/VIVE-OpenXR-Unity-master/VIVE-OpenXR-Unity-master/com.htc.upm.vive.openxr",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.xr.management": "4.2.1",
+        "com.unity.inputsystem": "1.7.0",
+        "com.unity.xr.openxr": "1.12.1",
+        "com.unity.xr.interaction.toolkit": "2.5.4"
+      }
+    },
     "com.unity.collab-proxy": {
       "version": "2.9.2",
       "depth": 0,
@@ -215,8 +226,8 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.openxr": {
-      "version": "1.9.1",
-      "depth": 0,
+      "version": "1.12.1",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.inputsystem": "1.6.3",
