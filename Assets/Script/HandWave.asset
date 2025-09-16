@@ -10,15 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dfd9edaac6ad8cf47b61ed50b59aa8eb, type: 3}
-  m_Name: CustomWaveform
+  m_Name: HandWave
   m_EditorClassIdentifier: 
   intendedMotor: 8
   amplitude: 1
-  waveformType: 1
-  attackTime: 0.083
-  sustainTime: 0
+  waveformType: 6
+  attackTime: 0
+  sustainTime: 1
   decayTime: 0
-  RepeatAmount: 3
+  pauseTime: 0
+  RepeatAmount: 1
   RepeatInfinite: 0
   startFrequency: 180
   endFrequency: 180
