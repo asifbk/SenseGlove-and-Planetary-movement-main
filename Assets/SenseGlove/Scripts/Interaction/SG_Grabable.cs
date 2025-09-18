@@ -338,9 +338,9 @@ namespace SG
                     {
                         //if (this.name.Contains("Coil"))
                         //{
-                        //    Debug.Log("Returning fingers back to physicsCollider");
+                          Debug.Log("Returning fingers back to physicsCollider");
                         //}
-                        //  Debug.Log("Returning fingers back to physicsCollider");
+                         Debug.Log("Returning fingers back to physicsCollider");
                         handPhysics.SetIgnoreCollision(this.GetPhysicsColliders(), true); //ignore collision until the colliders are no longer near the object - prevent tossing.
                         handPhysics.MarkForUncollision(this.physicsBody, this.GetPhysicsColliders());
                         handPhysics.ReturnColliders();
@@ -348,7 +348,7 @@ namespace SG
                     else
                     {
                         //re-enable collision
-                       // Debug.Log("No PhysicsBody: Re-Enabling Collision");
+                       Debug.Log("No PhysicsBody: Re-Enabling Collision");
                         handPhysics.SetIgnoreCollision(this.GetPhysicsColliders(), false);
                     }
                 }
