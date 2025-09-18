@@ -1,6 +1,6 @@
 ﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
 //
-// Purpose: For controlling in-game objects with tracked devices.
+// Purpose: For controlling in-game objects with tracked devices, with scaling support.
 //
 //=============================================================================
 
@@ -33,10 +33,18 @@ namespace Valve.VR
             Device16
         }
 
+        [Header("Device Settings")]
         public EIndex index;
 
         [Tooltip("If not set, relative to parent")]
         public Transform origin;
+
+        [Header("Transform Scaling")]
+        [Tooltip("Amplifies or reduces movement in Unity space. 1.0 = normal, 2.0 = double movement, 0.5 = half movement.")]
+        public float movementScale = 10.0f;
+
+        [Tooltip("Optional offset applied after scaling (in local space).")]
+        public Vector3 positionOffset = Vector3.zero;
 
         public bool isValid { get; private set; }
 
@@ -61,14 +69,17 @@ namespace Valve.VR
 
             var pose = new SteamVR_Utils.RigidTransform(poses[i].mDeviceToAbsoluteTracking);
 
+            // Apply movement scaling and offset
+            Vector3 scaledPos = pose.pos * movementScale + positionOffset;
+
             if (origin != null)
             {
-                transform.position = origin.transform.TransformPoint(pose.pos);
+                transform.position = origin.TransformPoint(scaledPos);
                 transform.rotation = origin.rotation * pose.rot;
             }
             else
             {
-                transform.localPosition = pose.pos;
+                transform.localPosition = scaledPos;
                 transform.localRotation = pose.rot;
             }
         }
