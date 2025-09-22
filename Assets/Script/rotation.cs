@@ -10,7 +10,7 @@ public class PlanetGestureRotationAndScale : MonoBehaviour
 
     [Header("Scaling Settings")]
     public SG_BasicGesture pinchGesture;       
-    public float scaleSpeed = 0.5f;
+    public float scaleSpeed = 0.1f;
     public float minScale = 0.2f;
     public float maxScale = 3f;
 
