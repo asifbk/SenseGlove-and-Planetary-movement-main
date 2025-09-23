@@ -23,7 +23,7 @@ public class UIBarGraphWithLabels : MaskableGraphic
 
     [Header("Graph Settings")]
     public int maxPoints = 10;
-    public float scrollSpeed = 10f;
+    public float scrollSpeed = 1f;
 
     private List<float> thumbValues = new List<float>();
     private List<float> indexValues = new List<float>();
@@ -75,14 +75,18 @@ public class UIBarGraphWithLabels : MaskableGraphic
         SetVerticesDirty();
     }
 
-    private void Update()
-    {
-        barOffset += scrollSpeed * Time.deltaTime;
-        if (barOffset >= rectTransform.rect.width / maxPoints)
-            barOffset = 0f;
+ private void Update()
+{
+    // Only scroll if there is data
+    if (thumbValues.Count == 0 && indexValues.Count == 0 && wristValues.Count == 0 && totalValues.Count == 0)
+        return;
 
-        SetVerticesDirty();
-    }
+    barOffset += scrollSpeed * Time.deltaTime;
+    if (barOffset >= rectTransform.rect.width / maxPoints)
+        barOffset = 0f;
+
+    SetVerticesDirty();
+}
 
     protected override void OnPopulateMesh(VertexHelper vh)
     {
