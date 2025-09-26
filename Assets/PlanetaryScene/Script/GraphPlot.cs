@@ -12,17 +12,17 @@ public class UIBarGraphWithLabels : MaskableGraphic
     public Color totalColor = Color.yellow;
 
     [Header("Grid Settings")]
-    public Color gridColor = new Color(1, 1, 1, 0.2f);
-    public int gridX = 10;
-    public int gridY = 5;
+    public Color gridColor = Color.black; // black grid
+    public int gridX = 0;
+    public int gridY = 0;
 
     [Header("Labels")]
-    public Font labelFont;
-    public int labelFontSize = 14;
+    public Font labelFont = null; // none
+    public int labelFontSize = 100;
     public Color labelColor = Color.white;
 
     [Header("Graph Settings")]
-    public int maxPoints = 10;
+    public int maxPoints = 5;
     public float scrollSpeed = 1f;
 
     private List<float> thumbValues = new List<float>();
@@ -36,9 +36,6 @@ public class UIBarGraphWithLabels : MaskableGraphic
         if (color.a == 0) color = new Color(0, 0, 0, 0.001f);
     }
 
-    /// <summary>
-    /// Add vibration data. If all values are zero, the graph will still scroll showing zeros.
-    /// </summary>
     public void AddData(float thumb, float index, float wrist)
     {
         if (float.IsNaN(thumb) || float.IsNaN(index) || float.IsNaN(wrist))
@@ -75,25 +72,24 @@ public class UIBarGraphWithLabels : MaskableGraphic
         SetVerticesDirty();
     }
 
- private void Update()
-{
-    // Only scroll if there is data
-    if (thumbValues.Count == 0 && indexValues.Count == 0 && wristValues.Count == 0 && totalValues.Count == 0)
-        return;
+    private void Update()
+    {
+        if (thumbValues.Count == 0 && indexValues.Count == 0 && wristValues.Count == 0 && totalValues.Count == 0)
+            return;
 
-    barOffset += scrollSpeed * Time.deltaTime;
-    if (barOffset >= rectTransform.rect.width / maxPoints)
-        barOffset = 0f;
+        barOffset += scrollSpeed * Time.deltaTime;
+        if (barOffset >= rectTransform.rect.width / maxPoints)
+            barOffset = 0f;
 
-    SetVerticesDirty();
-}
+        SetVerticesDirty();
+    }
 
     protected override void OnPopulateMesh(VertexHelper vh)
     {
         vh.Clear();
         DrawGrid(vh);
 
-        int totalBars = 4; // Thumb, Index, Wrist, Total
+        int totalBars = 4;
 
         DrawBars(vh, thumbValues, thumbColor, 0, totalBars);
         DrawBars(vh, indexValues, indexColor, 1, totalBars);
@@ -105,6 +101,8 @@ public class UIBarGraphWithLabels : MaskableGraphic
 
     private void DrawGrid(VertexHelper vh)
     {
+        if (gridX <= 0 && gridY <= 0) return; // no grid
+
         Vector2 size = rectTransform.rect.size;
         for (int i = 0; i <= gridX; i++)
         {
@@ -131,7 +129,7 @@ public class UIBarGraphWithLabels : MaskableGraphic
             float xCenter = i * pointWidth - barOffset + pointWidth / 2;
             xCenter += (barPositionIndex - (totalBars - 1) / 2f) * barWidth;
 
-            float height = Mathf.Clamp01(values[i]); // ensure 0-1 range
+            float height = Mathf.Clamp01(values[i]);
             Vector2 p1 = new Vector2(xCenter - barWidth / 2, 0);
             Vector2 p2 = new Vector2(xCenter + barWidth / 2, height * size.y);
 
@@ -141,37 +139,7 @@ public class UIBarGraphWithLabels : MaskableGraphic
 
     private void DrawLabels()
     {
-        foreach (Transform child in transform)
-        {
-            if (child.name.StartsWith("Label_"))
-                Destroy(child.gameObject);
-        }
-
-        Vector2 size = rectTransform.rect.size;
-
-        for (int j = 0; j <= gridY; j++)
-        {
-            float y = (j / (float)gridY) * size.y;
-            CreateText("Label_Y" + j, new Vector2(-25, y), (j / (float)gridY).ToString("0.0"));
-        }
-    }
-
-    private void CreateText(string name, Vector2 anchoredPos, string text)
-    {
-        GameObject go = new GameObject(name, typeof(RectTransform));
-        go.transform.SetParent(transform, false);
-
-        RectTransform rt = go.GetComponent<RectTransform>();
-        rt.anchoredPosition = anchoredPos;
-        rt.sizeDelta = new Vector2(50, 20);
-        rt.pivot = new Vector2(0.5f, 0.5f);
-
-        Text txt = go.AddComponent<Text>();
-        txt.font = labelFont != null ? labelFont : Resources.GetBuiltinResource<Font>("Arial.ttf");
-        txt.fontSize = labelFontSize;
-        txt.color = labelColor;
-        txt.alignment = TextAnchor.MiddleCenter;
-        txt.text = text;
+        // no font assigned → skip labels
     }
 
     private void AddRect(VertexHelper vh, Vector2 p1, Vector2 p2, Color color)

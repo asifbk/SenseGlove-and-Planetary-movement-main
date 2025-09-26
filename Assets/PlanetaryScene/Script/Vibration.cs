@@ -1,7 +1,10 @@
 using UnityEngine;
+using TMPro; // for TextMeshPro
 using SG;
 using SGCore;
 using SGCore.Nova;
+
+public enum GaugeAxis { X, Y, Z }
 
 [RequireComponent(typeof(SG_Grabable))]
 public class GrabVibration : MonoBehaviour
@@ -11,7 +14,7 @@ public class GrabVibration : MonoBehaviour
     [Range(0f, 1f)] public float indexAmplitude = 0.6f;
     [Range(0f, 1f)] public float wristAmplitude = 0.8f;
 
-    [Header("Waveforms (assign the same type used by your Actuation Controller)")]
+    [Header("Waveforms (assign same type as Actuation Controller)")]
     public SG_CustomWaveform thumbWaveform;
     public SG_CustomWaveform indexWaveform;
     public SG_CustomWaveform wristWaveform;
@@ -21,17 +24,36 @@ public class GrabVibration : MonoBehaviour
     public UIBarGraphWithLabels graph;
 
     [Header("Physical Parameters")]
-    public float mass = 10f;   // kg
-    public float alpha = 1f;   // scaling factor for force
+    public float mass = 10f;     // kg
+    public float alpha = 1f;     // scaling factor for force
     public float frequency = 180f; // Hz
+
+    [Header("Gauge UI")]
+    public TextMeshProUGUI forceText;  // Drag "Force Text" here
+    public TextMeshProUGUI newtonText; // Drag "Newton" here
+    public Transform pointer;          // Drag "Pointer" here
+
+    [Header("Gauge Settings")]
+    public float maxForce = 10f;         // Expected max force for full scale
+    public float minRotation = 0f;     // Leftmost angle
+    public float maxRotation = 180f;      // Rightmost angle
+    public GaugeAxis rotationAxis = GaugeAxis.Z; // Default Z-axis
 
     private SG_Grabable grabable;
     private bool wasGrabbed = false;
     private float timeElapsed = 0f;
+    private Quaternion baseRotation;      // store initial rotation
+    private Vector3 baseLocalPosition;    // store initial local position
 
     void Start()
     {
         grabable = GetComponent<SG_Grabable>();
+
+        if (pointer != null)
+        {
+            baseRotation = pointer.localRotation;      // initial rotation
+            baseLocalPosition = pointer.localPosition; // initial position (e.g., 25,1,0)
+        }
     }
 
     void Update()
@@ -99,24 +121,39 @@ public class GrabVibration : MonoBehaviour
     {
         if (!glove.IsConnected()) return;
 
-        // Calculate each waveform separately using its own amplitude
-        float sinWave = indexAmplitude * Mathf.Sin(2 * Mathf.PI * frequency * timeElapsed);   // Index = sin
-        float triWave = thumbAmplitude * (2f / Mathf.PI) * Mathf.Asin(Mathf.Sin(2 * Mathf.PI * frequency * timeElapsed)); // Thumb = triangle
-        float squareWave = wristAmplitude * Mathf.Sign(Mathf.Sin(2 * Mathf.PI * frequency * timeElapsed)); // Wrist = square
+        // Waveform components
+        float sinWave = indexAmplitude * Mathf.Sin(2 * Mathf.PI * frequency * timeElapsed);
+        float triWave = thumbAmplitude * (2f / Mathf.PI) * Mathf.Asin(Mathf.Sin(2 * Mathf.PI * frequency * timeElapsed));
+        float squareWave = wristAmplitude * Mathf.Sign(Mathf.Sin(2 * Mathf.PI * frequency * timeElapsed));
 
-        // Total force
+        // Total net force
         float totalForce = alpha * mass * (sinWave + triWave + squareWave);
         float abstotalForce = Mathf.Abs(totalForce);
 
         Debug.Log($"Thumb (Tri): {triWave:F2}, Index (Sin): {sinWave:F2}, Wrist (Square): {squareWave:F2}, Total Force: {abstotalForce:F2} N");
 
-        // Update graph if assigned
-        if (graph != null)
-        {
-            graph.AddData(triWave, sinWave, squareWave);
-        }
+        // --- Update Gauge ---
+        if (forceText != null)
+            forceText.text = abstotalForce.ToString("F2"); // show 2 decimals
 
-        // Send haptic vibrations
+        if (newtonText != null)
+            newtonText.text = "N"; // static label
+
+        if (pointer != null)
+    {
+    // Keep pointer exactly at holder pivot
+    pointer.position = pointer.parent.position; // world position locked
+
+    // Rotate pointer around Z axis in world space
+    pointer.rotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(minRotation, maxRotation, Mathf.Clamp01(abstotalForce / maxForce)));
+    }
+
+
+        // Update debug graph if present
+        if (graph != null)
+            graph.AddData(triWave, sinWave, squareWave);
+
+        // --- Send haptic vibrations ---
         if (thumbWaveform != null)
         {
             var wfThumb = thumbWaveform.GetWaveform();
