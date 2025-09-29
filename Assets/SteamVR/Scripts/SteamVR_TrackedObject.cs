@@ -41,7 +41,7 @@ namespace Valve.VR
 
         [Header("Transform Scaling")]
         [Tooltip("Amplifies or reduces movement in Unity space. 1.0 = normal, 2.0 = double movement, 0.5 = half movement.")]
-        public float movementScale = 10.0f;
+        public float movementScale = 6.0f;
 
         [Tooltip("Optional offset applied after scaling (in local space).")]
         public Vector3 positionOffset = Vector3.zero;

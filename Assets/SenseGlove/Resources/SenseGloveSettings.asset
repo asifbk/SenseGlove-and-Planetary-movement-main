@@ -18,9 +18,9 @@ MonoBehaviour:
   GlobalWristTrackingOffsets: 1
   customPosOffsetRight: {x: 0, y: 0, z: 0}
   customRotOffsetRight: {x: 0, y: 0, z: 0}
-  customPosOffsetLeft: {x: -0.25, y: 0.7, z: 0.046}
-  customRotOffsetLeft: {x: -38, y: -185, z: 143}
+  customPosOffsetLeft: {x: 0, y: 0, z: 0}
+  customRotOffsetLeft: {x: 0, y: 0, z: 0}
   leftQuat: 1
   rightQuat: 0
-  customLeftQuat: {x: -0.8912982, y: -0.31319916, z: -0.14231768, w: 0.29536355}
+  customLeftQuat: {x: 0, y: 0, z: 0, w: 1}
   customRightQuat: {x: 0, y: 0, z: 0, w: 1}
