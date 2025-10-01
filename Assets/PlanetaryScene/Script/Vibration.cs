@@ -67,9 +67,7 @@ public class GrabVibration : MonoBehaviour
 
         foreach (var selector in allSelectors)
         {
-            if (connectsTo == SG.HandSide.LeftHand)
-                break;
-            else if (selector.intendedFor == connectsTo)
+            if (selector.intendedFor == connectsTo)
             {
                 selectedDevice = selector;
                 break;
@@ -82,10 +80,16 @@ public class GrabVibration : MonoBehaviour
 
             if (connectsTo == SG.HandSide.LeftHand)
             {
+                // Only get left-handed gloves
                 HapticGlove[] allGloves = HapticGlove.GetHapticGloves(true);
                 foreach (var glove in allGloves)
                 {
-                    SendVibrations(glove);
+                    // Check if this is a left-handed glove
+                    if (glove.IsRight() == false) // Left hand
+                    {
+                        SendVibrations(glove);
+                        break; // Only send to one left glove
+                    }
                 }
             }
             else if (selectedDevice != null && selectedDevice.CurrentHaptics is HapticGlove)
@@ -101,10 +105,15 @@ public class GrabVibration : MonoBehaviour
 
                 if (connectsTo == SG.HandSide.LeftHand)
                 {
+                    // Only stop vibrations on left-handed gloves
                     HapticGlove[] allGloves = HapticGlove.GetHapticGloves(true);
                     foreach (var glove in allGloves)
                     {
-                        StopVibrations(glove);
+                        if (glove.IsRight() == false) // Left hand
+                        {
+                            StopVibrations(glove);
+                            break; // Only stop one left glove
+                        }
                     }
                 }
                 else if (selectedDevice != null && selectedDevice.CurrentHaptics is HapticGlove)
@@ -140,14 +149,13 @@ public class GrabVibration : MonoBehaviour
             newtonText.text = "N"; // static label
 
         if (pointer != null)
-    {
-    // Keep pointer exactly at holder pivot
-    pointer.position = pointer.parent.position; // world position locked
+        {
+            // Keep pointer exactly at holder pivot
+            pointer.position = pointer.parent.position; // world position locked
 
-    // Rotate pointer around Z axis in world space
-    pointer.rotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(minRotation, maxRotation, Mathf.Clamp01(abstotalForce / maxForce)));
-    }
-
+            // Rotate pointer around Z axis in world space
+            pointer.rotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(minRotation, maxRotation, Mathf.Clamp01(abstotalForce / maxForce)));
+        }
 
         // Update debug graph if present
         if (graph != null)
