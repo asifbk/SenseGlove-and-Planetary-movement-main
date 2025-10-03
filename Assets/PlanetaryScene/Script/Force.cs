@@ -16,18 +16,18 @@ public class SimpleFlexionDisplay : MonoBehaviour
             float[] flexions;
             if (trackedHand.GetNormalizedFlexion(out flexions) && flexions.Length >= 5)
             {
-                // Calculate force values based on flexion (0-100 scale)
-                int thumbForce = Mathf.RoundToInt(flexions[0] * 100);
-                int indexForce = Mathf.RoundToInt(flexions[1] * 100);
-                int middleForce = Mathf.RoundToInt(flexions[2] * 100);
-                int ringForce = Mathf.RoundToInt(flexions[3] * 100);
-                int pinkyForce = Mathf.RoundToInt(flexions[4] * 100);
+                // Convert flexion to force in Newtons (0-20N range)
+                float thumbForce = flexions[0] * 20f;
+                float indexForce = flexions[1] * 20f;
+                float middleForce = flexions[2] * 20f;
+                float ringForce = flexions[3] * 20f;
+                float pinkyForce = flexions[4] * 20f;
 
-                Debug.Log($"Thumb: {flexions[0]:F3} ({thumbForce}%) | " +
-                         $"Index: {flexions[1]:F3} ({indexForce}%) | " +
-                         $"Middle: {flexions[2]:F3} ({middleForce}%) | " +
-                         $"Ring: {flexions[3]:F3} ({ringForce}%) | " +
-                         $"Pinky: {flexions[4]:F3} ({pinkyForce}%)");
+                Debug.Log($"Thumb: {thumbForce:F1}N | " +
+                         $"Index: {indexForce:F1}N | " +
+                         $"Middle: {middleForce:F1}N | " +
+                         $"Ring: {ringForce:F1}N | " +
+                         $"Pinky: {pinkyForce:F1}N");
             }
             lastUpdateTime = Time.time;
         }
