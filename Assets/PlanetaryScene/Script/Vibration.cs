@@ -211,4 +211,5 @@ public class GrabVibration : MonoBehaviour
                 SG_CustomWaveform.CallCorrectWaveform(glove, wfWrist, VibrationLocation.Palm_IndexSide);
         }
     }
+    
 }
