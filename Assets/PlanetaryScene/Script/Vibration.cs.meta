@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 1aa31462c9775064aa537146c507be47
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - thumbWaveform: {instanceID: 0}
+  - indexWaveform: {instanceID: 0}
+  - wristWaveform: {instanceID: 0}
+  - graph: {instanceID: 0}
+  - forceText: {instanceID: 0}
+  - newtonText: {instanceID: 0}
+  - pointer: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
