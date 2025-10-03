@@ -1,5 +1,6 @@
 using UnityEngine;
 using SG;
+using Unity.VisualScripting;
 
 public class PlanetGestureRotationAndScale : MonoBehaviour
 {
@@ -13,9 +14,11 @@ public class PlanetGestureRotationAndScale : MonoBehaviour
     public float scaleSpeed = 0.1f;
     public float minScale = 0.2f;
     public float maxScale = 3f;
-
+    public Transform cameraRig;
+   
     [Header("Grab Reference")]
     public MyPhysicsGrab grabWrapper;   // ✅ reference to our wrapper
+   
 
     void Update()
     {
@@ -40,7 +43,6 @@ public class PlanetGestureRotationAndScale : MonoBehaviour
             if (thumbFlex < 0.25f) speed *= 1f;
             if (thumbFlex < 0.20f) speed *= 2f;
             if (thumbFlex < 0.15f) speed *= 4f;
-
             transform.Rotate(Vector3.up * speed * Time.deltaTime, Space.Self);
         }
     }
