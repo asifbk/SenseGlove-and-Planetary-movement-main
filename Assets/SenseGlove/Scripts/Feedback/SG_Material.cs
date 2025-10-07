@@ -124,6 +124,8 @@ namespace SG
                 this.deformScript.ResetMesh();
         }
 
+        //updated by mkarim1@ualr.edu.com on 2024-06-17: Added logging for force applied by each finger
+        private static readonly string[] fingerNames = new string[] { "Thumb", "Index", "Middle", "Ring", "Pinky" };
 
         /// <summary> Calculates the force on the finger based on material properties. </summary>
         /// <param name="displacement"></param>
@@ -131,6 +133,7 @@ namespace SG
         /// <returns></returns>
         public int CalculateForce(float displacement, int fingerIndex)
         {
+            int calculatedForce = 0;
             if (this.breakable)
             {
                 if (!this.isBroken)
@@ -166,9 +169,20 @@ namespace SG
 
             if (this.materialProperties != null)
             {
-                return (int)SG_Material.CalculateResponseForce(displacement, (int)(this.materialProperties.maxForce * 100), this.materialProperties.maxForceDist, ref this.materialProperties.forceRepsonse);
+                calculatedForce = (int)SG_Material.CalculateResponseForce(displacement, (int)(this.materialProperties.maxForce * 100), this.materialProperties.maxForceDist, ref this.materialProperties.forceRepsonse);
             }
-            return 100; //just full FFB at this point.
+            else
+            {
+                calculatedForce = 100; //just full FFB at this point
+            }
+
+            // Log the force for each finger
+            if (fingerIndex >= 0 && fingerIndex < fingerNames.Length)
+            {
+                Debug.Log($"Force applied by {fingerNames[fingerIndex]}: {calculatedForce}% (Distance: {displacement:F3}m)");
+            }
+
+            return calculatedForce;
         }
 
         public static int CalculateResponseForce(float disp, int maxForce, float maxForceDist, ref AnimationCurve ffbCurve)
