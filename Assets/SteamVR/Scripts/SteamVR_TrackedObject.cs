@@ -75,12 +75,16 @@ namespace Valve.VR
             if (origin != null)
             {
                 transform.position = origin.TransformPoint(scaledPos);
-                transform.rotation = origin.rotation * pose.rot;
+                // transform.rotation = origin.rotation * pose.rot;
+
+
+                // offset the rotation alwas by 90 degrees on X to make the controller face forward
+                // transform.rotation = origin.rotation * pose.rot * Quaternion.Euler(90, 0, 0);
             }
             else
             {
                 transform.localPosition = scaledPos;
-                transform.localRotation = pose.rot;
+                // transform.localRotation = pose.rot;
             }
         }
 

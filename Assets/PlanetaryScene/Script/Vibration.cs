@@ -139,7 +139,7 @@ public class GrabVibration : MonoBehaviour
         float totalForce = alpha * mass * (sinWave + triWave + squareWave);
         float abstotalForce = Mathf.Abs(totalForce);
 
-        Debug.Log($"Thumb (Tri): {triWave:F2}, Index (Sin): {sinWave:F2}, Wrist (Square): {squareWave:F2}, Total Force: {abstotalForce:F2} N");
+        //Debug.Log($"Thumb (Tri): {triWave:F2}, Index (Sin): {sinWave:F2}, Wrist (Square): {squareWave:F2}, Total Force: {abstotalForce:F2} N");
 
         // --- Update Gauge ---
         if (forceText != null)
@@ -211,4 +211,5 @@ public class GrabVibration : MonoBehaviour
                 SG_CustomWaveform.CallCorrectWaveform(glove, wfWrist, VibrationLocation.Palm_IndexSide);
         }
     }
+    
 }

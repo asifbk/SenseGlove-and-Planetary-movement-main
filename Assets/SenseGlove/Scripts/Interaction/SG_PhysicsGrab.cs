@@ -143,23 +143,25 @@ namespace SG
         }
 
 
-        /// <summary> Returns a list of all objects that are grabable at this moment. </summary>
+        /// Updated by @mkarim1@ualr.edu.com<summary> Returns a list of all objects that are grabable at this moment. Requires thumb, index and middle finger. </summary>
         /// <returns></returns>
         public List<SG_Interactable> ObjectsGrabableNow()
         {
             List<SG_Interactable> res = new List<SG_Interactable>();
-            // Thumb - Finger only for now.
-            if (thumbTouch.HoveredCount() > 0)
+            // Check thumb touch and grab intent
+            if (thumbTouch.HoveredCount() > 0 && wantsGrab[0])
             {
-                for (int f = 1; f < fingerScripts.Length; f++) //go through each finger -but- the thumb.
+                // Check index and middle finger touches and grab intents
+                if (wantsGrab[1] && wantsGrab[2])
                 {
-                    if (wantsGrab[f]) //this finger wants to grab on to objects
+                    // Get objects that all three fingers are touching
+                    SG_Interactable[] matchingThumbIndex = fingerScripts[0].GetMatchingObjects(fingerScripts[1]);
+                    foreach (SG_Interactable obj in matchingThumbIndex)
                     {
-                        SG_Interactable[] matching = fingerScripts[0].GetMatchingObjects(fingerScripts[f]);
-                        // Debug.Log("Found " + matching.Length + " matching objects between " + fingerScripts[0].name + " and " + fingerScripts[f].name);
-                        for (int i = 0; i < matching.Length; i++)
+                        // Only add if middle finger is also touching the same object
+                        if (fingerScripts[2].IsTouching(obj))
                         {
-                            SG.Util.SG_Util.SafelyAdd(matching[i], res);
+                            SG.Util.SG_Util.SafelyAdd(obj, res);
                         }
                     }
                 }
