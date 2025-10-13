@@ -13,7 +13,7 @@ namespace SG
         [Range(0, 1)] public float maxForce = 1.0f;
 
         /// <summary> The distance [in m] before the maximum force is reached. 0.02 == 2cm.</summary>
-        public float maxForceDist = 0.02f; //0.01 = 1 cm
+        public float maxForceDist = 0.0001f; //0.0001 = 0.01 cm
 
         /// <summary> The Force-Feedback response of an object. X axis [0..1] represtents the maxForceDist in relation to the y-axis, where [1] represents the maxForce. </summary>
         public AnimationCurve forceRepsonse = AnimationCurve.Constant(0, 1, 1);

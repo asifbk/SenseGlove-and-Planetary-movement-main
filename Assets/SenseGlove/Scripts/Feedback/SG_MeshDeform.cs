@@ -27,7 +27,7 @@ namespace SG
 
         /// <summary> The Maximum that a vertex can displace from its original position </summary>
         [Tooltip("The Maximum that a vertex can displace from its original position, in m.")]
-        public float maxDisplacement = 0.01f;
+        public float maxDisplacement = 0.00001f;
 
 
 

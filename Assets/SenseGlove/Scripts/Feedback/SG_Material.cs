@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace SG
 {
@@ -179,7 +179,7 @@ namespace SG
             // Log the force for each finger
             if (fingerIndex >= 0 && fingerIndex < fingerNames.Length)
             {
-                Debug.Log($"Force applied by {fingerNames[fingerIndex]}: {calculatedForce}% (Distance: {displacement:F3}m)");
+                //Debug.Log($"Force applied by {fingerNames[fingerIndex]}: {calculatedForce}% (Distance: {displacement:F3}m)");
             }
 
             return calculatedForce;
