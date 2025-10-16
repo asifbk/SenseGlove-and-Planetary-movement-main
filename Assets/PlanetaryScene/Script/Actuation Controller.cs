@@ -5,6 +5,10 @@ using SGCore.Nova;
 
 public class SG_VibrationController : MonoBehaviour
 {
+    [Header("Hand Selection")]
+    public bool enableLeftHand = true;   // Toggle for left hand vibration
+    public bool enableRightHand = true;  // Toggle for right hand vibration
+    
     [Header("Vibration Intensities (0-1)")]
     [Range(0f, 1f)] public float thumbIntensity = 0.5f;
     [Range(0f, 1f)] public float indexIntensity = 0.5f;
@@ -32,17 +36,18 @@ public class SG_VibrationController : MonoBehaviour
 
         foreach (var glove in connectedGloves)
         {
-            if (glove is NovaGlove nova1) // Nova 1
+            // Check if this glove should be enabled based on which hand it is
+            bool isEnabled = glove.IsRight() ? enableRightHand : enableLeftHand;
+            
+            if (!isEnabled) continue; // Skip this glove if it's not enabled
+
+            // Only handle Nova1 gloves since we're using two Nova1s
+            if (glove is NovaGlove nova1)
             {
+                // Apply identical vibration pattern to both hands
                 SendWaveform(nova1, thumbWaveform, VibrationLocation.Thumb_Tip, thumbIntensity);
                 SendWaveform(nova1, indexWaveform, VibrationLocation.Index_Tip, indexIntensity);
                 SendWaveform(nova1, wristWaveform, VibrationLocation.WholeHand, wristIntensity);
-            }
-            else if (glove is Nova2Glove nova2) // Nova 2
-            {
-                SendWaveform(nova2, thumbWaveform, VibrationLocation.Thumb_Tip, thumbIntensity);
-                SendWaveform(nova2, indexWaveform, VibrationLocation.Index_Tip, indexIntensity);
-                SendWaveform(nova2, wristWaveform, VibrationLocation.Palm_IndexSide, wristIntensity);
             }
         }
     }
@@ -57,4 +62,6 @@ public class SG_VibrationController : MonoBehaviour
 
         SG_CustomWaveform.CallCorrectWaveform(glove, wf, location);
     }
+
+
 }
