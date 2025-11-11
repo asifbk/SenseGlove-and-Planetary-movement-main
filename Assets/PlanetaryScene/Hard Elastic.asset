@@ -12,38 +12,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac56064fcf58ee34e8021d387ea94608, type: 3}
   m_Name: Hard Elastic
   m_EditorClassIdentifier: 
-  maxForce: 1
-  maxForceDist: 0.0002
+  maxForce: 0.5
+  maxForceDist: 0.003
   forceRepsonse:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
+      time: 0.0028383713
+      value: 0.1977024
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.5
       value: 0.7
-      inSlope: 1.3333333
-      outSlope: 1.3333333
-      tangentMode: 34
+      inSlope: 1.3976958
+      outSlope: 1.3976958
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.15
-      value: 0.9
-      inSlope: 0.8062928
-      outSlope: 0.8062928
-      tangentMode: 34
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.5109073
-      value: 1.0007842
-      inSlope: 0.2792523
-      outSlope: 0.2792523
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4

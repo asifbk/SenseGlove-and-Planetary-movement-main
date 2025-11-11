@@ -36,27 +36,31 @@ public class FloatingObjectInfo : MonoBehaviour
 
     void Update()
     {
-        if (grabable == null || infoCanvasInstance == null) return;
-
-        if (grabable.IsGrabbed())
-        {
-            infoCanvasInstance.SetActive(true);
-
-            // Update text dynamically from inspector values
-            infoText.text =
-                $"Name: {grabable.name}\n" +
-                $"Mass: {mass} kg\n" +
-                $"Diameter: {diameter}\n" +
-                $"Distance from Sun: {distanceFromSun} AU\n" +
-                $"Rotation Speed: {rotationSpeed}°/s";
-
-            // Follow object and face camera
-            infoCanvasInstance.transform.position = transform.position + offset;
-            infoCanvasInstance.transform.rotation = Camera.main.transform.rotation;
-        }
-        else
-        {
-            infoCanvasInstance.SetActive(false);
-        }
+    if (grabable == null) return;
+    if (infoCanvasInstance == null || infoText == null)
+    {
+        Debug.LogWarning("Info canvas or text not assigned properly!");
+        return;
     }
+
+    if (grabable.IsGrabbed())
+    {
+        infoCanvasInstance.SetActive(true);
+        infoText.text =
+            $"Name: {grabable.name}\n" +
+            $"Mass: {mass} kg\n" +
+            $"Diameter: {diameter}\n" +
+            $"Distance from Sun: {distanceFromSun} AU\n" +
+            $"Rotation Speed: {rotationSpeed}°/s";
+
+        infoCanvasInstance.transform.position = transform.position + offset;
+
+        if (Camera.main != null)
+            infoCanvasInstance.transform.rotation = Camera.main.transform.rotation;
+    }
+    else
+    {
+        infoCanvasInstance.SetActive(false);
+    }
+     }
 }

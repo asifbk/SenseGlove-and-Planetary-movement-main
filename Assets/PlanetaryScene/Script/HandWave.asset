@@ -14,15 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   intendedMotor: 8
   amplitude: 1
-  waveformType: 2
+  waveformType: 1
   attackTime: 0
-  sustainTime: 1
+  sustainTime: 0.5
   decayTime: 0
   pauseTime: 0
   RepeatAmount: 1
   RepeatInfinite: 0
-  startFrequency: 80
-  endFrequency: 80
+  startFrequency: 100
+  endFrequency: 100
   frequencySwitchTime: 0
   frequencySwitchMultiplier: 1
   hapticGeneratorFile: {fileID: 0}

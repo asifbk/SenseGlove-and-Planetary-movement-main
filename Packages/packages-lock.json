@@ -7,7 +7,7 @@
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.2.1"
       },
-      "hash": "aa068a6fcf0830b748ac8a048434fdb8e223f735"
+      "hash": "731617d1f48eec9d540ee7d4c080530a30410b71"
     },
     "com.htc.upm.vive.openxr": {
       "version": "file:C:/Users/mkarim1/Downloads/VIVE-OpenXR-Unity-master/VIVE-OpenXR-Unity-master/com.htc.upm.vive.openxr",
