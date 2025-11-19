@@ -49,8 +49,8 @@ public class FloatingObjectInfo : MonoBehaviour
         infoText.text =
             $"Name: {grabable.name}\n" +
             $"Mass: {mass} kg\n" +
-            $"Diameter: {diameter}\n" +
-            $"Distance from Sun: {distanceFromSun} AU\n" +
+            $"Diameter: {diameter}Km\n" +
+            $"Distance from Sun: {distanceFromSun} MKm\n" +
             $"Rotation Speed: {rotationSpeed}°/s";
 
         infoCanvasInstance.transform.position = transform.position + offset;
