@@ -31,6 +31,8 @@ namespace SG
 
         /// <summary> How quickly the object moves towards the target position, in m/s </summary>
         [Header("Grabable Options")]
+        
+
         public float moveSpeed = 100;
         /// <summary> How quickly this object moves to match its target rotation, in deg/s. </summary>
         public float rotateSpeed = 900;

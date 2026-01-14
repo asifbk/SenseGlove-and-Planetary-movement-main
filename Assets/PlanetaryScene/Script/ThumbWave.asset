@@ -20,7 +20,7 @@ MonoBehaviour:
   decayTime: 0
   pauseTime: 0
   RepeatAmount: 1
-  RepeatInfinite: 0
+  RepeatInfinite: 1
   startFrequency: 100
   endFrequency: 180
   frequencySwitchTime: 0

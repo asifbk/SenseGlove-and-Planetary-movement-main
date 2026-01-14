@@ -3,18 +3,29 @@ using TMPro;
 using SG;
 using SGCore;
 using SGCore.Nova;
+using System.IO;
 
 public enum GaugeAxis { X, Y, Z }
 
 [RequireComponent(typeof(SG_Grabable))]
 public class GrabVibration : MonoBehaviour
 {
-    [Header("Haptics Scaling (Paper: O(t) = α M A(t) sin(2π t OF(t)) )")]
-    [Tooltip("α in the paper – overall gain on the force term.")]
-    public float alpha = 1.0f;
-
-    [Tooltip("Dummy mass M used in the model (kg).")]
+    [Header("Physics Parameters")]
+    [Tooltip("Mass of the object (kg). Affects force calculation.")]
     public float mass = 1.0f;
+
+    [Tooltip("Maximum acceleration threshold (m/s²).")]
+    public float aMax = 5.0f;
+
+    [Tooltip("Minimum acceleration threshold to trigger vibration (m/s²).")]
+    public float aMin = 0.1f;
+
+    [Header("Haptic Frequency Range (Hz)")]
+    [Tooltip("Minimum vibration frequency.")]
+    public float fMin = 100f;
+
+    [Tooltip("Maximum vibration frequency.")]
+    public float fMax = 180f;
 
     [Header("Waveform Amplitudes per Channel (0–1)")]
     [Range(0f, 1f)] public float thumbAmplitude = 0.3f;
@@ -30,21 +41,27 @@ public class GrabVibration : MonoBehaviour
     public SG.HandSide connectsTo = SG.HandSide.LeftHand;
 
     [Header("Optional Graph (3-channel)")]
-    public UIBarGraphWithLabels graph;  // keep same name as before
+    public UIBarGraphWithLabels graph;
 
-    [Header("Gauge UI")]
-    public TextMeshProUGUI forceText;   // e.g., "Force: 3.2 N"
-    public TextMeshProUGUI newtonText;  // raw numeric value if you used one
+    [Header("Haptic Output Display")]
+    public TextMeshProUGUI a1Text;      // A1 amplitude
+    public TextMeshProUGUI a2Text;      // A2 amplitude
+    public TextMeshProUGUI a3Text;      // A3 amplitude
+    public TextMeshProUGUI freqText;    // Frequency display
+    public TextMeshProUGUI accelText;   // Acceleration display
     public Transform pointer;           // pointer needle transform
 
     [Header("Gauge Settings")]
-    public float maxForce = 10f;        // maps to maxRotation
     public float minRotation = 0f;      // degrees
     public float maxRotation = 180f;    // degrees
     public GaugeAxis rotationAxis = GaugeAxis.Z;
 
     [Header("Debug Options")]
     public bool logToConsole = true;
+
+    [Header("Logging to Disk")]
+    [Tooltip("If true, logs time, |A(t)|, frequency, amplitudes to CSV while object is grabbed.")]
+    public bool logToFile = true;
 
     // --- internal state ---
     private SG_Grabable grabable;
@@ -53,9 +70,13 @@ public class GrabVibration : MonoBehaviour
     private Vector3 lastVelocity;
 
     private bool wasGrabbed = false;
-    private float dynamicTime = 0f;     // used for time-scaling to simulate frequency
 
     private Quaternion pointerBaseRotation;
+
+    // logging
+    private StreamWriter logWriter = null;
+    private float logTime = 0f;
+    private string logFilePath;
 
     void Start()
     {
@@ -67,6 +88,18 @@ public class GrabVibration : MonoBehaviour
         {
             pointerBaseRotation = pointer.localRotation;
         }
+
+        if (logToFile)
+        {
+#if UNITY_EDITOR
+            logFilePath = Path.Combine(Application.dataPath, gameObject.name + "_haptics.csv");
+#else
+            logFilePath = Path.Combine(
+                Application.persistentDataPath,
+                gameObject.name + "_haptics.csv"
+            );
+#endif
+        }
     }
 
     void Update()
@@ -74,6 +107,13 @@ public class GrabVibration : MonoBehaviour
         if (grabable == null) return;
 
         bool isGrabbed = grabable.IsGrabbed();
+
+        // Just started grabbing this frame
+        if (isGrabbed && !wasGrabbed)
+        {
+            logTime = 0f;
+            OpenLogFileIfNeeded();
+        }
 
         if (isGrabbed)
         {
@@ -87,10 +127,15 @@ public class GrabVibration : MonoBehaviour
             {
                 StopVibrations(glove);
             }
-            dynamicTime = 0f;
+            CloseLogFile();
         }
 
         wasGrabbed = isGrabbed;
+    }
+
+    void OnDestroy()
+    {
+        CloseLogFile();
     }
 
     // -------------------------------------------------------
@@ -109,80 +154,147 @@ public class GrabVibration : MonoBehaviour
         lastPosition = currentPos;
         lastVelocity = velocity;
 
-        float speed = velocity.magnitude;        // |V(t)|
         float accelMag = acceleration.magnitude; // |A(t)|
 
-        // --- 2) Frequency OF(t) = 100 + 50 * |V| / (|V| + 2) ---
-        float dynamicFreq = 100f + 50f * (speed / (speed + 2f + 1e-5f)); // small epsilon to avoid div/0
+        // --- 2) Check if acceleration is below minimum threshold ---
+        if (accelMag < aMin)
+        {
+            // No vibration if acceleration too low
+            UpdateDisplayUI(0f, 0f, 0f, 0f, accelMag);
+            
+            HapticGlove gloveStop = GetGloveForSide(connectsTo);
+            if (gloveStop != null)
+            {
+                StopVibrations(gloveStop);
+            }
+            return;
+        }
 
-        // --- 3) Force term α M A(t) ---
-        float force = alpha * mass * accelMag;   // this is proportional to αMA(t)
-        float forceClamped = Mathf.Max(0f, force);
+        // --- 3) Clamp acceleration to aMax (amplitude locked above aMax) ---
+        float accelClamped = Mathf.Min(accelMag, aMax);
 
-        // --- 4) Gauge + text UI from force ---
-        UpdateGaugeAndText(forceClamped);
+        // --- 4) Calculate frequency based on clamped acceleration ---
+        // f = f_min + ((a(t) - a_min) / (a_max - a_min)) * (f_max - f_min)
+        float accelNorm = Mathf.Clamp01((accelClamped - aMin) / (aMax - aMin));
+        float frequency = fMin + accelNorm * (fMax - fMin);
 
-        // --- 5) Time-scaling to simulate sin(2π t OF(t)) ---
-        // we don't have direct frequency in CustomWaveform,
-        // so we simulate higher frequency by increasing phase speed.
-        dynamicTime += dt * dynamicFreq;  // this mimics t * OF(t) in the paper
+        // --- 5) Calculate normalized amplitude directly from acceleration ---
+        // Amplitude scales linearly from 0 to 1 as acceleration goes from aMin to aMax
+        float aClamped = accelNorm;
 
-        float sineTerm = Mathf.Sin(2f * Mathf.PI * dynamicTime); // sin(2π * (t * OF(t)))
+        // --- 6) Calculate per-channel amplitudes ---
+        float a1 = aClamped * thumbAmplitude;
+        float a2 = aClamped * indexAmplitude;
+        float a3 = aClamped * wristAmplitude;
 
-        // --- 6) Final "output" amplitude O(t) = α M A(t) sin(...)
-        float rawOutput = forceClamped * sineTerm;
-
-        // Scale to [0,1] for haptics amplitude
-        // you can tune 1/maxForceScaling to change intensity feel.
-        float maxEffectiveForce = Mathf.Max(0.001f, maxForce); // avoid div/0
-        float normalizedAmp = Mathf.Clamp01(Mathf.Abs(rawOutput) / maxEffectiveForce);
+        // --- 7) Calculate force for display/logging purposes ---
+        float force = mass * accelClamped;
 
         if (logToConsole)
         {
             Debug.Log(
-                $"[GrabVibration] |V|={speed:F3} m/s, |A|={accelMag:F3} m/s², OF(t)={dynamicFreq:F1} Hz, " +
-                $"Force={forceClamped:F3} N, OutputAmp={normalizedAmp:F3}"
+                $"[GrabVibration] {gameObject.name} |A|={accelMag:F3} m/s², " +
+                $"|A|_clamped={accelClamped:F3} m/s², " +
+                $"F={force:F3} N, Freq={frequency:F1} Hz, " +
+                $"accelNorm={accelNorm:F3}, " +
+                $"A1={a1:F3}, A2={a2:F3}, A3={a3:F3}"
             );
         }
 
-        // --- 7) Optional graph display ---
+        // --- 8) Update UI displays ---
+        UpdateDisplayUI(a1, a2, a3, frequency, accelMag);
+
+        // --- 9) Optional graph display ---
         if (graph != null)
         {
-            // Use slight variations so channels are visually distinct
-            float thumbVal = normalizedAmp * thumbAmplitude;
-            float indexVal = normalizedAmp * indexAmplitude;
-            float wristVal = normalizedAmp * wristAmplitude;
-            graph.AddData(thumbVal, indexVal, wristVal);
+            graph.AddData(a1, a2, a3);
         }
 
-        // --- 8) Send vibration to glove ---
+        // --- 10) Send vibration to glove ---
         HapticGlove glove = GetGloveForSide(connectsTo);
         if (glove != null && glove.IsConnected())
         {
-            SendVibrations(glove, normalizedAmp);
+            SendVibrations(glove, a1, a2, a3);
+        }
+
+        // --- 11) Log to file ---
+        if (logToFile && logWriter != null)
+        {
+            logWriter.WriteLine($"{logTime:F5},{accelMag:F5},{frequency:F5},{a1:F5},{a2:F5},{a3:F5}");
+        }
+
+        logTime += dt;
+    }
+
+    // -------------------------------------------------------
+    // Logging helpers
+    // -------------------------------------------------------
+    private void OpenLogFileIfNeeded()
+    {
+        if (!logToFile) return;
+
+        try
+        {
+            logWriter = new StreamWriter(logFilePath, false);
+            logWriter.WriteLine("# Object: " + gameObject.name);
+            logWriter.WriteLine("# Columns: time(s), |A(t)|(m/s^2), frequency(Hz), A1, A2, A3");
+            logWriter.WriteLine("time,acceleration,frequency,A1,A2,A3");
+            logWriter.Flush();
+            Debug.Log("[GrabVibration] Logging to: " + logFilePath);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("[GrabVibration] Could not open log file: " + e.Message);
+            logWriter = null;
+        }
+    }
+
+    private void CloseLogFile()
+    {
+        if (logWriter != null)
+        {
+            logWriter.Flush();
+            logWriter.Close();
+            logWriter = null;
         }
     }
 
     // -------------------------------------------------------
-    // UI: gauge + text
+    // UI: displays and gauge
     // -------------------------------------------------------
-    private void UpdateGaugeAndText(float forceValue)
+    private void UpdateDisplayUI(float a1, float a2, float a3, float frequency, float accelMag)
     {
-        // Texts
-        if (forceText != null)
+        // Display A1, A2, A3
+        if (a1Text != null)
         {
-            forceText.text = $"Force: {forceValue:F2} N";
+            a1Text.text = $"A1: {a1:F3}";
         }
 
-        if (newtonText != null)
+        if (a2Text != null)
         {
-            newtonText.text = $"{forceValue:F2} N";
+            a2Text.text = $"A2: {a2:F3}";
         }
 
-        // Pointer needle
+        if (a3Text != null)
+        {
+            a3Text.text = $"A3: {a3:F3}";
+        }
+
+        if (freqText != null)
+        {
+            freqText.text = $"f: {frequency:F1} Hz";
+        }
+
+        if (accelText != null)
+        {
+            accelText.text = $"|A|: {accelMag:F3} m/s²";
+        }
+
+        // Pointer needle based on clamped amplitude average
         if (pointer != null)
         {
-            float t = Mathf.Clamp01(forceValue / Mathf.Max(maxForce, 0.001f));
+            float avgAmplitude = (a1 + a2 + a3) / 3f;
+            float t = Mathf.Clamp01(avgAmplitude);
             float angle = Mathf.Lerp(minRotation, maxRotation, t);
 
             Vector3 euler = pointerBaseRotation.eulerAngles;
@@ -217,28 +329,29 @@ public class GrabVibration : MonoBehaviour
         return null;
     }
 
-    private void SendVibrations(HapticGlove glove, float globalAmp)
+    private void SendVibrations(HapticGlove glove, float a1, float a2, float a3)
     {
-        // globalAmp ∈ [0,1] based on O(t); per-channel amplitudes scale it.
-
+        // A1 for thumb
         if (thumbWaveform != null)
         {
             var wfThumb = thumbWaveform.GetWaveform();
-            wfThumb.Amplitude = Mathf.Clamp01(globalAmp * thumbAmplitude);
+            wfThumb.Amplitude = Mathf.Clamp01(a1);
             SG_CustomWaveform.CallCorrectWaveform(glove, wfThumb, VibrationLocation.Thumb_Tip);
         }
 
+        // A2 for index
         if (indexWaveform != null)
         {
             var wfIndex = indexWaveform.GetWaveform();
-            wfIndex.Amplitude = Mathf.Clamp01(globalAmp * indexAmplitude);
+            wfIndex.Amplitude = Mathf.Clamp01(a2);
             SG_CustomWaveform.CallCorrectWaveform(glove, wfIndex, VibrationLocation.Index_Tip);
         }
 
+        // A3 for wrist
         if (wristWaveform != null)
         {
             var wfWrist = wristWaveform.GetWaveform();
-            wfWrist.Amplitude = Mathf.Clamp01(globalAmp * wristAmplitude);
+            wfWrist.Amplitude = Mathf.Clamp01(a3);
 
             if (glove is NovaGlove)
                 SG_CustomWaveform.CallCorrectWaveform(glove, wfWrist, VibrationLocation.WholeHand);

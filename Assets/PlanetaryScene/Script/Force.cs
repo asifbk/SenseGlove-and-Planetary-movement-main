@@ -34,12 +34,12 @@ public class SimpleFlexionDisplay : MonoBehaviour
 
                     string handSide = trackedHand.handModel.handSide == HandSide.RightHand ? "RightHand" : "LeftHand";
 
-                    Debug.Log($"{handSide} → " +
-                              $"Thumb: {thumbForce:F1}N | " +
-                              $"Index: {indexForce:F1}N | " +
-                              $"Middle: {middleForce:F1}N | " +
-                              $"Ring: {ringForce:F1}N | " +
-                              $"Pinky: {pinkyForce:F1}N");
+                    // Debug.Log($"{handSide} → " +
+                    //           $"Thumb: {thumbForce:F1}N | " +
+                    //           $"Index: {indexForce:F1}N | " +
+                    //           $"Middle: {middleForce:F1}N | " +
+                    //           $"Ring: {ringForce:F1}N | " +
+                    //           $"Pinky: {pinkyForce:F1}N");
 
                     var device = new XRInputDeviceData
                     {
