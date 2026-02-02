@@ -1,0 +1,192 @@
+[33mcommit 973dd415254d4fce60febd45f1894741e0ac58a7[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Wed Jan 14 15:10:41 2026 -0600
+
+    Canvas Upadted
+
+[33mcommit ec0b58a00f3819e5c27b61588855d4f3570091ac[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Wed Jan 14 15:09:20 2026 -0600
+
+    Motion canvas added from tracking the acceleraaaaaon and velocity in game mode
+
+[33mcommit f5d0890a3484523e6a85b1569b2bd3675035ebf5[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Wed Jan 14 15:01:34 2026 -0600
+
+    Motion canvas added from tracking the acceleraaaaaon and velocity in game mode
+
+[33mcommit e3c6cdbf507f87d0aa526cefcd6c8ed0f3064288[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Wed Nov 19 15:47:57 2025 -0600
+
+    Vibration will vary based on the virtual accceleration
+
+[33mcommit 1b1740dc03cfd911a50a5ebcddd12c7da02c89fe[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Tue Nov 11 15:51:17 2025 -0600
+
+    Right Hand gesture updated (fist gesture)
+
+[33mcommit 1d92e3c1a5984efcd50789eeaa2cd271866eb3cb[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Mon Oct 27 12:40:15 2025 -0500
+
+    While releasing the vibration latency is reduced from 50 ms to 20 ms
+
+[33mcommit fc9ab012a1d827fbd7a0bfa8b9a701f67c909682[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Thu Oct 16 13:58:59 2025 -0500
+
+    mesh deform script changed to solve the mesh torn problem
+
+[33mcommit 170b86bbf44c28e7d6c010218c04243457b7c3c3[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Mon Oct 13 13:40:24 2025 -0500
+
+    Texture of the objetcs are updated
+
+[33mcommit ee9a667a6f86d4e015ea5bd4cb2dfb7f3b2a9d30[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Tue Oct 7 16:57:32 2025 -0500
+
+    The Physics grab is updared for the 4 fingers instead of 2. and Finger Flexation value also derived
+
+[33mcommit 19a12cc62f42198388a601ad207a5249ace44e0d[m
+Merge: e267de6 c437033
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Tue Oct 7 16:37:33 2025 -0500
+
+    merge master with main
+
+[33mcommit c4370335e35b64cd7b1b0551befcd7a05af3b6b2[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Tue Oct 7 16:27:22 2025 -0500
+
+    Planet rotations on their axis
+
+[33mcommit 9bc07fb288f144d3b88412bde94c762deb64d2f9[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Fri Oct 3 18:24:59 2025 -0500
+
+    Flexation and Force Realtionship was built
+
+[33mcommit 9b3a86869a1492cc6c2a23a4344ea7472c6a0aa3[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Fri Oct 3 17:42:52 2025 -0500
+
+    Flexation and Force Realtion ship need to be build
+
+[33mcommit bdf281bf479ebe184dedcbf8567f027c25b03b97[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Fri Oct 3 13:58:55 2025 -0500
+
+    Update scene management and adjust offsets
+
+[33mcommit bd4b93dc463d7c15a7f08dde7c31ab0197f35c2c[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Fri Oct 3 12:51:10 2025 -0500
+
+    Scene Management updated and offset is set
+
+[33mcommit e267de6d011c266305d17e0a194a020ac6ad4be5[m[33m ([m[1;32mmainbkp[m[33m)[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Wed Oct 1 11:44:10 2025 -0500
+
+    Vibration only in Grabbed hand Updated
+
+[33mcommit 02156cb46dff43315fa0b422cbc24ccd14386969[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Mon Sep 29 16:11:54 2025 -0500
+
+    For making vive tracker active isolated the IMU trackiing
+
+[33mcommit 7db0e4efd9fdbb7ba100b670c775403151514a1f[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Fri Sep 26 13:16:41 2025 -0500
+
+    Gauge added in the Scene foe measuring the force
+
+[33mcommit b48cee1e6110e65e78a83d2c24a8e1784e2b1aa3[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Tue Sep 23 17:11:51 2025 -0500
+
+    Graph added to the game scene which represents the Force
+
+[33mcommit 3a4ba96eea4b95969b5be27398a454055e4218fb[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Tue Sep 23 16:40:31 2025 -0500
+
+    Graph added to the game scene which represents the Force
+
+[33mcommit bb96b2ffbaf38ab9e26229f4b1602c931065e0dc[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Mon Sep 22 16:51:46 2025 -0500
+
+    Canvas for displaying the info while grabbing added.
+
+[33mcommit 68ca88f43aa2c449529ef54783b66ddeffa36ee0[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Mon Sep 22 15:22:55 2025 -0500
+
+    Canvas for displaying the info while grabbing added.
+
+[33mcommit 743198eee1d83a7692e853a45d8f5e66f5723a94[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Thu Sep 18 17:39:08 2025 -0500
+
+    VIve Tracker amplification and Weight load applied
+
+[33mcommit 1e49cec6e14059fe6263a6ba949c9e77ed06ed32[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Thu Sep 18 15:43:04 2025 -0500
+
+    VIve Tracker amplification and Weight load applied
+
+[33mcommit c9c8dbb8821c45cd4c8fca34955803e22627eabf[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Wed Sep 17 16:32:45 2025 -0500
+
+    Vibration script attached to the object
+
+[33mcommit 3b52fb049b251d1df80865ca6d52b266e13959bb[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Tue Sep 16 17:52:00 2025 -0500
+
+    Actuation Matrix calibration was done
+
+[33mcommit a277076b0104f44932395b240b4f1985e9f41de9[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Fri Sep 12 15:23:37 2025 -0500
+
+    Dummy weight calibration started
+
+[33mcommit eb40b9a6ea6433d9f81d5553589a3642f2f1a719[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Tue Sep 9 15:00:15 2025 -0500
+
+    Wrist Rotation added to scene
+
+[33mcommit 0e202898106e3f7bb26f5e193b4c89f871b25038[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Fri Sep 5 18:02:14 2025 -0500
+
+    Grab Function added
+
+[33mcommit 917cb341f056e49a657f8a7ee61fe68e92522f9b[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Wed Sep 3 14:00:52 2025 -0500
+
+    Both Hand Added,Right Hand can grab the scene materials
+
+[33mcommit 043ceb2064d9c3363ddc858710254d401d1c75e3[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Fri Aug 29 13:15:13 2025 -0500
+
+    Gun and Thumbs Gesture added
+
+[33mcommit 0318164b178427db8c0d22b1596d5f68cdf7acfc[m
+Author: Asif Bin Karim <asif.mte.148004@gmail.com>
+Date:   Thu Aug 28 13:57:11 2025 -0500
+
+    Speed control based on the gesture flexation
