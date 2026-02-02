@@ -11,6 +11,7 @@ public class StudyManager : MonoBehaviour
     public GameObject instructionsPanel;
     public GameObject trainingPanel;
     public GameObject taskPanel;
+    public GameObject classificationPanel;
     public GameObject completionPanel;
     
     [Header("Timer Display")]
@@ -19,6 +20,7 @@ public class StudyManager : MonoBehaviour
     
     [Header("Validation")]
     public PlacementValidator placementValidator;
+    public PlanetClassificationManager classificationManager;
     
     [Header("Training References")]
     public GameObject trainingArea;
@@ -34,6 +36,7 @@ public class StudyManager : MonoBehaviour
         Instructions,
         Training,
         Task,
+        Classification,
         Completed
     }
     
@@ -91,14 +94,33 @@ public class StudyManager : MonoBehaviour
         taskEndTime = Time.time;
         elapsedTime = taskEndTime - taskStartTime;
         
+        StartClassificationPhase();
+        
+        Debug.Log($"[StudyManager] Rank task completed in {FormatTime(elapsedTime)} - starting classification phase");
+    }
+    
+    public void StartClassificationPhase()
+    {
+        ShowPhase(StudyPhase.Classification);
+        
+        if (classificationManager != null)
+        {
+            classificationManager.StartClassificationPhase();
+        }
+        
+        Debug.Log("[StudyManager] Classification phase started - sort planets by type");
+    }
+    
+    public void CompleteStudy()
+    {
         ShowPhase(StudyPhase.Completed);
         
         if (completionTimeText != null)
         {
-            completionTimeText.text = $"Completion Time: {FormatTime(elapsedTime)}";
+            completionTimeText.text = $"Rank Task Time: {FormatTime(elapsedTime)}\nAll Tasks Completed!";
         }
         
-        Debug.Log($"[StudyManager] Task completed in {FormatTime(elapsedTime)}");
+        Debug.Log($"[StudyManager] Study completed!");
     }
     
     public void ResetStudy()
@@ -128,6 +150,9 @@ public class StudyManager : MonoBehaviour
         
         if (taskPanel != null)
             taskPanel.SetActive(phase == StudyPhase.Task);
+        
+        if (classificationPanel != null)
+            classificationPanel.SetActive(phase == StudyPhase.Classification);
         
         if (completionPanel != null)
             completionPanel.SetActive(phase == StudyPhase.Completed);
