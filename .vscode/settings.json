@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "SenseGlove-and-Planetary-movement-main-main.sln"
+    "dotnet.defaultSolution": "Vibrotactile mass cues user study.sln"
 }
