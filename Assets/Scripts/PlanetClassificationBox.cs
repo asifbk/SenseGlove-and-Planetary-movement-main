@@ -18,12 +18,16 @@ public class PlanetClassificationBox : MonoBehaviour
     [Header("Detection")]
     public float detectionRadius = 0.5f;
     public float resetDelayTime = 0.5f;
+    public float feedbackDisplayTime = 2f;
     
     private MeshRenderer boxRenderer;
     private List<GameObject> planetsInBox = new List<GameObject>();
     private Material boxMaterial;
     private bool detectionEnabled = true;
     private float detectionResumeTime = 0f;
+    private Color boxOriginalColor;
+    private UnityEngine.Coroutine colorResetCoroutine;
+    private int lastPlanetCount = 0;
     
     void Start()
     {
@@ -31,6 +35,7 @@ public class PlanetClassificationBox : MonoBehaviour
         if (boxRenderer != null)
         {
             boxMaterial = boxRenderer.material;
+            boxOriginalColor = boxMaterial.color;
             ResetBoxColor();
         }
     }
@@ -40,11 +45,18 @@ public class PlanetClassificationBox : MonoBehaviour
         planetsInBox.Clear();
         if (boxMaterial != null)
         {
-            boxMaterial.color = normalColor;
+            boxMaterial.color = boxOriginalColor;
         }
         
         detectionEnabled = false;
         detectionResumeTime = Time.time + resetDelayTime;
+        lastPlanetCount = 0;
+        
+        if (colorResetCoroutine != null)
+        {
+            StopCoroutine(colorResetCoroutine);
+            colorResetCoroutine = null;
+        }
         
         Debug.Log($"[PlanetClassificationBox] {boxType} box reset - detection disabled for {resetDelayTime}s");
     }
@@ -87,27 +99,50 @@ public class PlanetClassificationBox : MonoBehaviour
         if (planetsInBox.Count == 0)
         {
             if (boxMaterial != null)
-                boxMaterial.color = normalColor;
+                boxMaterial.color = boxOriginalColor;
+            lastPlanetCount = 0;
             return;
         }
         
-        bool allCorrect = true;
-        
-        foreach (GameObject planet in planetsInBox)
+        if (planetsInBox.Count != lastPlanetCount)
         {
-            PlanetType planetType = GetPlanetType(planet);
+            lastPlanetCount = planetsInBox.Count;
             
-            if (planetType != boxType)
+            if (colorResetCoroutine != null)
             {
-                allCorrect = false;
-                break;
+                StopCoroutine(colorResetCoroutine);
             }
+            
+            bool allCorrect = true;
+            
+            foreach (GameObject planet in planetsInBox)
+            {
+                PlanetType planetType = GetPlanetType(planet);
+                
+                if (planetType != boxType)
+                {
+                    allCorrect = false;
+                    break;
+                }
+            }
+            
+            if (boxMaterial != null)
+            {
+                boxMaterial.color = allCorrect ? correctColor : incorrectColor;
+            }
+            
+            colorResetCoroutine = StartCoroutine(ResetColorAfterDelay());
         }
-        
+    }
+    
+    System.Collections.IEnumerator ResetColorAfterDelay()
+    {
+        yield return new UnityEngine.WaitForSeconds(feedbackDisplayTime);
         if (boxMaterial != null)
         {
-            boxMaterial.color = allCorrect ? correctColor : incorrectColor;
+            boxMaterial.color = boxOriginalColor;
         }
+        Debug.Log($"[PlanetClassificationBox] {boxType} box returned to original color after feedback display");
     }
     
     PlanetType GetPlanetType(GameObject planet)

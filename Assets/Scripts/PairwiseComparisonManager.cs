@@ -15,6 +15,7 @@ public class PairwiseComparisonManager : MonoBehaviour
     
     [Header("Settings")]
     public float comparisonCooldown = 1f;
+    public float feedbackDisplayTime = 2f;
     
     [Header("UI References")]
     public GameObject proceedButton;
@@ -27,16 +28,27 @@ public class PairwiseComparisonManager : MonoBehaviour
     private Renderer heavierRenderer;
     private Renderer lighterRenderer;
     private bool hasCompletedOnce = false;
+    private Color heavierBucketOriginalColor;
+    private Color lighterBucketOriginalColor;
+    private UnityEngine.Coroutine colorResetCoroutine;
     
     void Start()
     {
         studyManager = FindObjectOfType<StudyManager>();
         
         if (heavierBucket != null)
+        {
             heavierRenderer = heavierBucket.GetComponent<Renderer>();
+            if (heavierRenderer != null)
+                heavierBucketOriginalColor = heavierRenderer.material.color;
+        }
         
         if (lighterBucket != null)
+        {
             lighterRenderer = lighterBucket.GetComponent<Renderer>();
+            if (lighterRenderer != null)
+                lighterBucketOriginalColor = lighterRenderer.material.color;
+        }
         
         InitializePlanetMasses();
         ResetBucketColors();
@@ -136,6 +148,11 @@ public class PairwiseComparisonManager : MonoBehaviour
         
         lastComparisonTime = Time.time;
         
+        if (colorResetCoroutine != null)
+        {
+            StopCoroutine(colorResetCoroutine);
+        }
+        
         if (isValid)
         {
             SetBucketColors(correctColor, correctColor);
@@ -152,6 +169,8 @@ public class PairwiseComparisonManager : MonoBehaviour
             SetBucketColors(incorrectColor, incorrectColor);
             Debug.Log($"[PairwiseComparison] ✗ INCORRECT! {GetHeaviestPlanet(planetsInHeavierBucket)} is NOT heavier than {GetLightestPlanet(planetsInLighterBucket)}");
         }
+        
+        colorResetCoroutine = StartCoroutine(ResetColorsAfterDelay());
     }
     
     void ShowProceedButton()
@@ -174,7 +193,14 @@ public class PairwiseComparisonManager : MonoBehaviour
     
     void ResetBucketColors()
     {
-        SetBucketColors(neutralColor, neutralColor);
+        SetBucketColors(heavierBucketOriginalColor, lighterBucketOriginalColor);
+    }
+    
+    System.Collections.IEnumerator ResetColorsAfterDelay()
+    {
+        yield return new UnityEngine.WaitForSeconds(feedbackDisplayTime);
+        ResetBucketColors();
+        Debug.Log("[PairwiseComparison] Buckets returned to original color after feedback display");
     }
     
     string GetHeaviestPlanet(HashSet<string> planets)
