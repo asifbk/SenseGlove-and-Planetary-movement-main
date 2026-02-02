@@ -25,25 +25,53 @@ public class VerifyStudySetup : EditorWindow
             Debug.Log("✓ StudyManager found");
             
             if (studyManager.instructionsPanel == null) { Debug.LogWarning("  ⚠ instructionsPanel not assigned"); warnings++; }
-            if (studyManager.trainingPanel == null) { Debug.LogWarning("  ⚠ trainingPanel not assigned"); warnings++; }
             if (studyManager.taskPanel == null) { Debug.LogWarning("  ⚠ taskPanel not assigned"); warnings++; }
+            if (studyManager.classificationPanel == null) { Debug.LogWarning("  ⚠ classificationPanel not assigned"); warnings++; }
             if (studyManager.completionPanel == null) { Debug.LogWarning("  ⚠ completionPanel not assigned"); warnings++; }
+            if (studyManager.solarPanel == null) { Debug.LogWarning("  ⚠ solarPanel not assigned"); warnings++; }
+            if (studyManager.heavierBucket == null) { Debug.LogWarning("  ⚠ heavierBucket not assigned"); warnings++; }
+            if (studyManager.lighterBucket == null) { Debug.LogWarning("  ⚠ lighterBucket not assigned"); warnings++; }
+            if (studyManager.rockyBox == null) { Debug.LogWarning("  ⚠ rockyBox not assigned"); warnings++; }
+            if (studyManager.gaseousBox == null) { Debug.LogWarning("  ⚠ gaseousBox not assigned"); warnings++; }
             if (studyManager.timerText == null) { Debug.LogWarning("  ⚠ timerText not assigned"); warnings++; }
             if (studyManager.completionTimeText == null) { Debug.LogWarning("  ⚠ completionTimeText not assigned"); warnings++; }
-            if (studyManager.placementValidator == null) { Debug.LogWarning("  ⚠ placementValidator not assigned - Run 'Complete User Study Setup'"); warnings++; }
-            if (studyManager.trainingArea == null) { Debug.LogWarning("  ⚠ trainingArea not assigned"); warnings++; }
+            if (studyManager.comparisonManager == null) { Debug.LogWarning("  ⚠ comparisonManager not assigned"); warnings++; }
+            if (studyManager.classificationManager == null) { Debug.LogWarning("  ⚠ classificationManager not assigned"); warnings++; }
         }
         
-        // Check PlacementValidator
-        PlacementValidator validator = FindObjectOfType<PlacementValidator>();
-        if (validator == null)
+        // Check PairwiseComparisonManager
+        PairwiseComparisonManager comparisonMgr = FindObjectOfType<PairwiseComparisonManager>();
+        if (comparisonMgr == null)
         {
-            Debug.LogError("✗ PlacementValidator not found!");
-            issues++;
+            Debug.LogWarning("⚠ PairwiseComparisonManager not found!");
+            warnings++;
         }
         else
         {
-            Debug.Log("✓ PlacementValidator found");
+            Debug.Log("✓ PairwiseComparisonManager found");
+            
+            if (comparisonMgr.heavierBucket == null)
+            {
+                Debug.LogWarning("  ⚠ heavierBucket not assigned");
+                warnings++;
+            }
+            
+            if (comparisonMgr.lighterBucket == null)
+            {
+                Debug.LogWarning("  ⚠ lighterBucket not assigned");
+                warnings++;
+            }
+        }
+        
+        // Check PlacementValidator (legacy - optional)
+        PlacementValidator validator = FindObjectOfType<PlacementValidator>();
+        if (validator == null)
+        {
+            Debug.Log("ℹ PlacementValidator not found (using new pairwise comparison system)");
+        }
+        else
+        {
+            Debug.Log("✓ PlacementValidator found (legacy system)");
             
             if (validator.placeholders == null || validator.placeholders.Length != 8)
             {
@@ -70,30 +98,34 @@ public class VerifyStudySetup : EditorWindow
             Debug.Log("✓ StudyUI Canvas found");
         }
         
-        // Check Training Area
-        GameObject trainingArea = GameObject.Find("TrainingArea");
-        if (trainingArea == null)
+        // Check for classification boxes
+        GameObject rockyBox = GameObject.Find("RockyBox");
+        if (rockyBox == null)
         {
-            Debug.LogError("✗ TrainingArea not found!");
-            issues++;
+            Debug.LogWarning("⚠ RockyBox not found");
+            warnings++;
         }
         else
         {
-            Debug.Log("✓ TrainingArea found");
-            
-            TrainingObject[] trainingObjects = trainingArea.GetComponentsInChildren<TrainingObject>();
-            if (trainingObjects.Length != 3)
-            {
-                Debug.LogWarning($"  ⚠ Expected 3 training objects, found {trainingObjects.Length}");
-                warnings++;
-            }
+            Debug.Log("✓ RockyBox found");
+        }
+        
+        GameObject gaseousBox = GameObject.Find("GaseousBox");
+        if (gaseousBox == null)
+        {
+            Debug.LogWarning("⚠ GaseousBox not found");
+            warnings++;
+        }
+        else
+        {
+            Debug.Log("✓ GaseousBox found");
         }
         
         // Check for copied scene elements
         GameObject solarPanel = GameObject.Find("SolarPanel");
         if (solarPanel == null)
         {
-            Debug.LogWarning("⚠ SolarPanel not found - Need to copy from NewScene.unity");
+            Debug.LogWarning("⚠ SolarPanel not found");
             warnings++;
         }
         else
@@ -104,7 +136,7 @@ public class VerifyStudySetup : EditorWindow
         GameObject cameraRig = GameObject.Find("[CameraRig]");
         if (cameraRig == null)
         {
-            Debug.LogWarning("⚠ [CameraRig] not found - Need to copy from NewScene.unity");
+            Debug.LogWarning("⚠ [CameraRig] not found");
             warnings++;
         }
         else
@@ -115,35 +147,12 @@ public class VerifyStudySetup : EditorWindow
         GameObject eventSystem = GameObject.Find("EventSystem");
         if (eventSystem == null)
         {
-            Debug.LogWarning("⚠ EventSystem not found - Need to copy from NewScene.unity");
+            Debug.LogWarning("⚠ EventSystem not found");
             warnings++;
         }
         else
         {
             Debug.Log("✓ EventSystem found");
-        }
-        
-        // Check training sphere GrabVibration
-        if (trainingArea != null)
-        {
-            GameObject[] spheres = { 
-                GameObject.Find("TrainingArea/LightSphere"),
-                GameObject.Find("TrainingArea/MediumSphere"),
-                GameObject.Find("TrainingArea/HeavySphere")
-            };
-            
-            foreach (GameObject sphere in spheres)
-            {
-                if (sphere != null)
-                {
-                    GrabVibration gv = sphere.GetComponent<GrabVibration>();
-                    if (gv == null)
-                    {
-                        Debug.LogWarning($"  ⚠ {sphere.name} missing GrabVibration component");
-                        warnings++;
-                    }
-                }
-            }
         }
         
         // Summary

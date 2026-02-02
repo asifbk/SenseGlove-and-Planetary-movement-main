@@ -16,10 +16,15 @@ public class VRButtonInteraction : MonoBehaviour
     [Header("Haptic Feedback")]
     public bool useHapticFeedback = true;
     
+    [Header("Hover Hold Settings")]
+    public float hoverHoldDuration = 5f;
+    
     private Image buttonImage;
     private bool isPressed = false;
     private bool wasInRange = false;
     private Transform[] fingerTips;
+    private float hoverTimer = 0f;
+    private bool hasTriggeredOnHover = false;
     
     void Start()
     {
@@ -38,27 +43,76 @@ public class VRButtonInteraction : MonoBehaviour
     
     void FindFingerTips()
     {
-        GameObject[] hands = new GameObject[] 
-        {
-            GameObject.Find("/[CameraRig]/SGHand Left"),
-            GameObject.Find("/[CameraRig]/SGHand Right")
-        };
-        
         System.Collections.Generic.List<Transform> tips = new System.Collections.Generic.List<Transform>();
         
-        foreach (GameObject hand in hands)
+        // Find hands by searching for SG_TrackedHand components
+        SG.SG_TrackedHand[] trackedHands = Object.FindObjectsOfType<SG.SG_TrackedHand>();
+        
+        Debug.Log($"[VRButtonInteraction] Found {trackedHands.Length} SG_TrackedHand components in scene");
+        
+        foreach (SG.SG_TrackedHand trackedHand in trackedHands)
         {
-            if (hand != null)
+            GameObject hand = trackedHand.gameObject;
+            Debug.Log($"[VRButtonInteraction] Processing hand: {hand.name} (active: {hand.activeInHierarchy})");
+            Debug.Log($"[VRButtonInteraction] Full path: {GetGameObjectPath(hand)}");
+            
+            // Try multiple possible structures
+            Transform fingerTip = null;
+            
+            // Method 1: Look for Feedback Layer > Index_FFB
+            Transform feedbackLayer = hand.transform.Find("Feedback Layer");
+            if (feedbackLayer != null)
             {
-                Transform feedbackLayer = hand.transform.Find("Feedback Layer");
-                if (feedbackLayer != null)
+                fingerTip = feedbackLayer.Find("Index_FFB");
+                if (fingerTip != null)
                 {
-                    Transform indexFFB = feedbackLayer.Find("Index_FFB");
-                    if (indexFFB != null)
-                    {
-                        tips.Add(indexFFB);
-                    }
+                    Debug.Log($"[VRButtonInteraction] ✓ Found Index_FFB via Feedback Layer in {hand.name}");
                 }
+                else
+                {
+                    Debug.Log($"[VRButtonInteraction] Children of Feedback Layer: {ListChildren(feedbackLayer)}");
+                }
+            }
+            
+            // Method 2: Look directly for Index_FFB child
+            if (fingerTip == null)
+            {
+                fingerTip = hand.transform.Find("Index_FFB");
+                if (fingerTip != null)
+                {
+                    Debug.Log($"[VRButtonInteraction] ✓ Found Index_FFB directly under {hand.name}");
+                }
+            }
+            
+            // Method 3: Search recursively for Index_FFB
+            if (fingerTip == null)
+            {
+                fingerTip = FindChildRecursive(hand.transform, "Index_FFB");
+                if (fingerTip != null)
+                {
+                    Debug.Log($"[VRButtonInteraction] ✓ Found Index_FFB recursively in {hand.name}");
+                }
+            }
+            
+            // Method 4: Look for any finger tip (Index finger)
+            if (fingerTip == null)
+            {
+                fingerTip = FindChildRecursive(hand.transform, "Index");
+                if (fingerTip != null)
+                {
+                    Debug.Log($"[VRButtonInteraction] ✓ Found Index finger in {hand.name}: {fingerTip.name}");
+                }
+            }
+            
+            if (fingerTip != null)
+            {
+                tips.Add(fingerTip);
+                Debug.Log($"[VRButtonInteraction] ✓ Added {fingerTip.name} from {hand.name} at world position {fingerTip.position}");
+            }
+            else
+            {
+                Debug.LogWarning($"[VRButtonInteraction] Could not find finger tip in {hand.name}");
+                LogHierarchy(hand.transform, 0);
             }
         }
         
@@ -66,14 +120,76 @@ public class VRButtonInteraction : MonoBehaviour
         
         if (fingerTips.Length == 0)
         {
-            Debug.LogWarning("[VRButtonInteraction] No finger tips found. Make sure SGHand objects exist in scene.");
+            Debug.LogWarning("[VRButtonInteraction] No finger tips found. Will retry in 2 seconds.");
         }
+        else
+        {
+            Debug.Log($"[VRButtonInteraction] ✓ Successfully found {fingerTips.Length} finger tip(s) for button: {gameObject.name}");
+        }
+    }
+    
+    Transform FindChildRecursive(Transform parent, string childName)
+    {
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            Transform child = parent.GetChild(i);
+            if (child.name.Contains(childName))
+            {
+                return child;
+            }
+            Transform result = FindChildRecursive(child, childName);
+            if (result != null)
+            {
+                return result;
+            }
+        }
+        return null;
+    }
+    
+    void LogHierarchy(Transform parent, int indent)
+    {
+        string indentStr = new string(' ', indent * 2);
+        Debug.Log($"{indentStr}{parent.name}");
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            LogHierarchy(parent.GetChild(i), indent + 1);
+        }
+    }
+    
+    string ListChildren(Transform parent)
+    {
+        string result = "";
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            if (i > 0) result += ", ";
+            result += parent.GetChild(i).name;
+        }
+        return result;
+    }
+    
+    string GetGameObjectPath(GameObject obj)
+    {
+        string path = "/" + obj.name;
+        Transform current = obj.transform.parent;
+        while (current != null)
+        {
+            path = "/" + current.name + path;
+            current = current.parent;
+        }
+        return path;
     }
     
     void Update()
     {
         if (targetButton == null || fingerTips == null || fingerTips.Length == 0)
+        {
+            // Only retry finding finger tips every 2 seconds to avoid spam
+            if (Time.frameCount % 120 == 0)
+            {
+                FindFingerTips();
+            }
             return;
+        }
         
         bool inRange = IsFingerNearButton(out float closestDistance);
         
@@ -84,6 +200,20 @@ public class VRButtonInteraction : MonoBehaviour
         else if (!inRange && wasInRange)
         {
             OnHoverExit();
+        }
+        
+        // Update hover timer
+        if (inRange && !hasTriggeredOnHover)
+        {
+            hoverTimer += Time.deltaTime;
+            if (hoverTimer >= hoverHoldDuration)
+            {
+                OnHoverHoldComplete();
+            }
+        }
+        else if (!inRange)
+        {
+            hoverTimer = 0f;
         }
         
         if (inRange && closestDistance < triggerDistance && !isPressed)
@@ -126,11 +256,25 @@ public class VRButtonInteraction : MonoBehaviour
             buttonImage.color = hoverColor;
         }
         
-        Debug.Log($"[VRButtonInteraction] Hovering over {gameObject.name}");
+        hoverTimer = 0f;
+        hasTriggeredOnHover = false;
+        Debug.Log($"[VRButtonInteraction] Hovering over {gameObject.name}. Hold for {hoverHoldDuration} seconds to activate.");
+    }
+    
+    void OnHoverHoldComplete()
+    {
+        if (!targetButton.interactable) return;
+        
+        hasTriggeredOnHover = true;
+        targetButton.onClick.Invoke();
+        Debug.Log($"[VRButtonInteraction] Button {gameObject.name} triggered after {hoverHoldDuration}s hold!");
     }
     
     void OnHoverExit()
     {
+        hoverTimer = 0f;
+        hasTriggeredOnHover = false;
+        
         if (buttonImage != null && !isPressed)
         {
             buttonImage.color = normalColor;

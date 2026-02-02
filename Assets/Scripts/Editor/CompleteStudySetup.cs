@@ -14,24 +14,21 @@ public class CompleteStudySetup : EditorWindow
             return;
         }
 
-        // Find PlacementValidator
-        PlacementValidator validator = FindObjectOfType<PlacementValidator>();
-        if (validator == null)
+        // Find PairwiseComparisonManager
+        PairwiseComparisonManager comparisonManager = FindObjectOfType<PairwiseComparisonManager>();
+        if (comparisonManager == null)
         {
-            Debug.LogError("[Setup] Could not find PlacementValidator in scene!");
-            return;
+            Debug.LogWarning("[Setup] PairwiseComparisonManager not found in scene - will need to be assigned manually");
+        }
+        else
+        {
+            // Link StudyManager to PairwiseComparisonManager
+            studyManager.comparisonManager = comparisonManager;
+            EditorUtility.SetDirty(studyManager);
+            Debug.Log("[Setup] ✓ StudyManager linked to PairwiseComparisonManager!");
         }
 
-        // Link StudyManager to PlacementValidator
-        studyManager.placementValidator = validator;
-        EditorUtility.SetDirty(studyManager);
-
-        // Link PlacementValidator to StudyManager
-        validator.studyManager = studyManager;
-        EditorUtility.SetDirty(validator);
-
-        Debug.Log("[Setup] ✓ StudyManager and PlacementValidator cross-references complete!");
         Debug.Log("[Setup] ✓ All systems ready!");
-        Debug.Log("[Setup] Next: Copy SolarPanel and [CameraRig] from NewScene.unity to UserStudy.unity");
+        Debug.Log("[Setup] Next: Create HeavierBucket and LighterBucket GameObjects in scene");
     }
 }

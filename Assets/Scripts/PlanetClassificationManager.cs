@@ -10,12 +10,14 @@ public class PlanetClassificationManager : MonoBehaviour
     [Header("UI References")]
     public GameObject classificationPanel;
     public TextMeshProUGUI instructionText;
+    public GameObject completeButton;
     
     [Header("Expected Counts")]
     public int expectedRockyCount = 3;
     public int expectedGaseousCount = 5;
     
     private bool classificationComplete = false;
+    private bool hasClassifiedOnce = false;
     private StudyManager studyManager;
     
     void Start()
@@ -30,6 +32,7 @@ public class PlanetClassificationManager : MonoBehaviour
     {
         if (classificationPanel != null && classificationPanel.activeSelf)
         {
+            CheckForFirstSuccess();
             CheckClassificationCompletion();
         }
     }
@@ -42,12 +45,34 @@ public class PlanetClassificationManager : MonoBehaviour
         }
         
         classificationComplete = false;
+        hasClassifiedOnce = false;
+        
+        if (completeButton != null)
+            completeButton.SetActive(false);
         
         Debug.Log("[PlanetClassificationManager] Classification phase started");
         
         if (instructionText != null)
         {
             instructionText.text = "Touch each planet to feel its surface.\nPlace Rocky planets in the ROCKY box.\nPlace Gaseous planets in the GASEOUS box.";
+        }
+    }
+    
+    void CheckForFirstSuccess()
+    {
+        if (hasClassifiedOnce)
+            return;
+        
+        if (rockyBox == null || gaseousBox == null)
+            return;
+        
+        bool rockyHasCorrect = rockyBox.GetPlanetCount() > 0 && rockyBox.HasCorrectPlanets();
+        bool gaseousHasCorrect = gaseousBox.GetPlanetCount() > 0 && gaseousBox.HasCorrectPlanets();
+        
+        if (rockyHasCorrect || gaseousHasCorrect)
+        {
+            hasClassifiedOnce = true;
+            ShowCompleteButton();
         }
     }
     
@@ -85,6 +110,15 @@ public class PlanetClassificationManager : MonoBehaviour
         }
         
         Invoke(nameof(CompleteStudy), 2f);
+    }
+    
+    void ShowCompleteButton()
+    {
+        if (completeButton != null)
+        {
+            completeButton.SetActive(true);
+            Debug.Log("[PlanetClassificationManager] Complete button shown - user can finish experiment!");
+        }
     }
     
     void CompleteStudy()

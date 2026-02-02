@@ -1,0 +1,3 @@
+# User Study - Planet Placement Based on Vibrotactile Feedback
+# Correct Order (Rank 1-8): Jupiter, Saturn, Uranus, Neptune, Earth, Venus, Mars, Mercury
+Timestamp,ElapsedTime,AttemptNumber,Rank,PlacedPlanetName,PlacedMass,ExpectedMass,IsCorrect

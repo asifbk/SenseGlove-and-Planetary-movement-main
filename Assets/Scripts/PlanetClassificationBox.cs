@@ -17,10 +17,13 @@ public class PlanetClassificationBox : MonoBehaviour
     
     [Header("Detection")]
     public float detectionRadius = 0.5f;
+    public float resetDelayTime = 0.5f;
     
     private MeshRenderer boxRenderer;
     private List<GameObject> planetsInBox = new List<GameObject>();
     private Material boxMaterial;
+    private bool detectionEnabled = true;
+    private float detectionResumeTime = 0f;
     
     void Start()
     {
@@ -28,13 +31,36 @@ public class PlanetClassificationBox : MonoBehaviour
         if (boxRenderer != null)
         {
             boxMaterial = boxRenderer.material;
+            ResetBoxColor();
+        }
+    }
+    
+    public void ResetBoxColor()
+    {
+        planetsInBox.Clear();
+        if (boxMaterial != null)
+        {
             boxMaterial.color = normalColor;
         }
+        
+        detectionEnabled = false;
+        detectionResumeTime = Time.time + resetDelayTime;
+        
+        Debug.Log($"[PlanetClassificationBox] {boxType} box reset - detection disabled for {resetDelayTime}s");
     }
     
     void Update()
     {
-        DetectPlanetsInBox();
+        if (!detectionEnabled && Time.time >= detectionResumeTime)
+        {
+            detectionEnabled = true;
+            Debug.Log($"[PlanetClassificationBox] Detection re-enabled for {boxType} box");
+        }
+        
+        if (detectionEnabled)
+        {
+            DetectPlanetsInBox();
+        }
     }
     
     void DetectPlanetsInBox()
@@ -48,6 +74,8 @@ public class PlanetClassificationBox : MonoBehaviour
             if (col.CompareTag("Planet") || col.GetComponent<FloatingObjectInfo>() != null)
             {
                 planetsInBox.Add(col.gameObject);
+                float distance = Vector3.Distance(transform.position, col.transform.position);
+                Debug.Log($"[PlanetClassificationBox] {boxType} box detected {col.gameObject.name} at distance {distance:F2} units");
             }
         }
         

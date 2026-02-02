@@ -162,7 +162,7 @@ public class PlacementValidator : MonoBehaviour
             
             if (studyManager != null)
             {
-                studyManager.OnTaskCompleted();
+                studyManager.OnComparisonTaskCompleted();
             }
         }
     }
