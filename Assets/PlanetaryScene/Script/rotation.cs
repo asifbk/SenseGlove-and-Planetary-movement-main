@@ -1,6 +1,5 @@
 using UnityEngine;
 using SG;
-using Unity.VisualScripting;
 
 public class PlanetGestureRotationAndScale : MonoBehaviour
 {

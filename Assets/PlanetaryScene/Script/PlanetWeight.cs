@@ -1,8 +1,6 @@
 using UnityEngine;
 using SG;
 using SGCore;
-using SGCore.Haptics;
-using UnityEngine.XR;
 
 [RequireComponent(typeof(SG_Grabable))]
 public class PlanetWeight : MonoBehaviour
